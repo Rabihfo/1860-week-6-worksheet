@@ -1,0 +1,10 @@
+CHIP A6Q2<201849171> {
+    IN a, b, c, d;
+    OUT f;
+
+    PARTS:
+    // Intermediate signals
+    AND(a=false, b=b, out=N1);          // ¬a ∧ b
+    NOT(in=d, out=Nd);                 // ¬c or
+
+    AND(in...AB)]) // f=
