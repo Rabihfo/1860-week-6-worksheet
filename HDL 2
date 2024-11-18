@@ -1,0 +1,28 @@
+CHIP A6Q2<201849171> {
+    IN a, b, c, d;
+    OUT f;
+
+    PARTS:
+    // Intermediate signals
+    NOT(in=a, out=Na);                 // ¬a
+    NOT(in=d, out=Nd);                 // ¬d
+
+    // First group: (¬a ∧ b ∧ ¬d) or (¬a ∧ b ∧ c ∧ d)
+    AND(a=Na, b=b, out=G1_1);          // ¬a ∧ b
+    AND(a=G1_1, b=Nd, out=G1_2);       // ¬a ∧ b ∧ ¬d
+    AND(a=G1_1, b=c, out=G1_3);        // ¬a ∧ b ∧ c
+    AND(a=G1_3, b=d, out=G1_4);        // ¬a ∧ b ∧ c ∧ d
+    OR(a=G1_2, b=G1_4, out=G1);        // Combine group 1: (¬a ∧ b ∧ ¬d) ∨ (¬a ∧ b ∧ c ∧ d)
+
+    // Second group: (a ∧ ¬b ∧ c ∧ d) or (a ∧ b ∧ ¬d)
+    NOT(in=b, out=Nb);                 // ¬b
+    AND(a=a, b=Nb, out=G2_1);          // a ∧ ¬b
+    AND(a=G2_1, b=c, out=G2_2);        // a ∧ ¬b ∧ c
+    AND(a=G2_2, b=d, out=G2_3);        // a ∧ ¬b ∧ c ∧ d
+    AND(a=a, b=b, out=G2_4);           // a ∧ b
+    AND(a=G2_4, b=Nd, out=G2_5);       // a ∧ b ∧ ¬d
+    OR(a=G2_3, b=G2_5, out=G2);        // Combine group 2: (a ∧ ¬b ∧ c ∧ d) ∨ (a ∧ b ∧ ¬d)
+
+    // Final output: Combine both groups
+    OR(a=G1, b=G2, out=f);             // f = Group 1 ∨ Group 2
+}
